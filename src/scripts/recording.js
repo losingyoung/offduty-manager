@@ -29,7 +29,7 @@ class Recorder {
         this._record = false
         this.timer = null
         this.inIdle = false
-        this.idleTime = 1000 * 60 * 6
+        this.idleTime = 60 * 3
     }
     startRecording() {
         logger.addLog('start recording')
@@ -40,7 +40,7 @@ class Recorder {
         }
     }
     async record() {
-        logger.addLog(`recording is ${this._record}`)
+        logger.addLog(`recording is ${this._record}, inidle is ${this.inIdle}`)
         this.queryIdle()
         if (this._record && !this.inIdle) {
             if (!isWeekend()) {
@@ -52,6 +52,7 @@ class Recorder {
     }
     queryIdle() {
         electron.powerMonitor.querySystemIdleTime(time => {
+            logger.addLog(`idle time: ${time}`)
             if (time > this.idleTime) {
                 this.inIdle = true
             } else {
