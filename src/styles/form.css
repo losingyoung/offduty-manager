@@ -1,0 +1,19 @@
+
+.form-container .input-container{
+    margin:10px 0;
+}
+.input-container .input-ele{
+    height:30px;
+}
+#saveBtn{
+    height: 40px;
+    line-height: 40px;
+    width:100%;
+    margin-top:10px;
+    font-size:20px;
+    border: none;
+    border-radius: 5px;
+    background: rgb(72, 163, 223);
+    color:rgb(240, 238, 236);
+    cursor: pointer;
+}

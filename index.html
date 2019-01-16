@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>记录你的工作投入度</title>
+    <link rel="stylesheet" href="./src/styles/index.css">
+    <link href="src/styles/font-awesome/css/all.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+        <div class="header-title">记录你的工作投入度</div>
+    </header>
+    <div class="main-content-wrapper">
+      <div class="main-row">
+          <div>
+            <h2>平均时间计算</h2>
+            <ul>
+              <li>本周: <span id='weekAvrg'></span></li>
+              <li>本月: <span id='monthAvrg'></span></li>
+              <li>本季度: <span id='thisQuater'></span></li>
+              <li>上季度: <span id='lastQuater'></span></li>
+              <li>当年: <span id='yearAvrg'></span></li>
+            </ul>
+            <label for="count6">包含六点分钟</label> <input type="checkbox" name="count6" id="count6Input" />
+            <div><button id='calculateBtn'>计算</button></div>
+          </div>
+          <div class="form-container">
+              <h2>下班时间</h2>
+              <div class="input-container">
+                  <input type="number" name='hour' class='input-ele' id='timeHour' />
+                  <span>:</span>
+                  <input type="number" name='minute' class='input-ele' id='timeMinute'/>
+              </div>
+              <button id='saveBtn' autofocus>保存</button>
+          </div>
+          
+          <div>
+            <h2>操作</h2>
+            <button id='exportTime'>导出结果</button>
+            <button id='importTime'>导入时间</button>
+            <button id='initBtn'>清除数据</button>
+          </div>
+      </div>
+      <div class="main-row" >
+        <div>
+            <div>最近数据</div>
+            <div id='displayTable'></div>
+        </div>
+      </div>
+    </div>
+   
+    <footer>
+        <span class='contact-info'>losingyoung@gayhub</span>
+        <i class="far fa-copyright" id='copyright' ></i>
+    </footer>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+  </body>
+</html>
