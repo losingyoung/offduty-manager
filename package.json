@@ -1,13 +1,14 @@
 {
   "name": "offduty-manager",
-  "version": "2.0.8",
+  "version": "1.0.0",
   "description": "record and calculate your offduty time",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
     "dist-mac": "electron-builder --mac --ia32",
-    "dist-win": "electron-builder --win --x64"
+    "dist-win": "electron-builder --win --x64",
+    "update-version": "npm version patch && git push — tags origin master"
   },
   "repository": "https://github.com/losingyoung/offduty-manager",
   "keywords": [
