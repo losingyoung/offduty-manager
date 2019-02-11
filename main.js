@@ -8,6 +8,7 @@ const {setAutoLaunch} = require('./src/scripts/autoLaunch')
 const {getUserSetting} = require('./src/scripts/userSetting')
 const {app, BrowserWindow, Tray, Menu, dialog} = electron
 const recorder = require('./src/scripts/recording')
+const { autoUpdater } = require("electron-updater")
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -106,6 +107,7 @@ app.on('ready', () => {
   createWindow()
   setContextMenu()
   listenPowerChanged()
+  autoUpdater.checkForUpdatesAndNotify()
 })
 
 // Quit when all windows are closed.

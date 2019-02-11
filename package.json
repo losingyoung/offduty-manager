@@ -1,6 +1,6 @@
 {
   "name": "offduty-manager",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "record and calculate your offduty time",
   "main": "main.js",
   "scripts": {
@@ -8,15 +8,11 @@
     "pack": "electron-builder --dir",
     "dist-mac": "electron-builder --mac --ia32",
     "dist-win": "electron-builder --win --x64",
-    "update-version": "npm version patch && git push — tags origin master"
+    "update-version": "npm version patch && git push —tags origin master"
   },
   "repository": "https://github.com/losingyoung/offduty-manager",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Electron"
   ],
   "author": "losingyoug",
   "license": "CC0-1.0",
@@ -26,12 +22,13 @@
   },
   "dependencies": {
     "auto-launch": "^5.0.5",
+    "electron-updater": "^4.0.6",
     "exceljs": "^1.6.3",
     "fs-extra": "^7.0.1",
     "moment": "^2.22.2"
   },
   "build": {
-    "appId": "358925084",
+    "appId": "com.github.losingyoung.offduty-manager",
     "mac": {
       "category": "office"
     },
@@ -39,6 +36,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "perMachine": true
-    }
+    },
+    "publish": ["github"]
   }
 }
