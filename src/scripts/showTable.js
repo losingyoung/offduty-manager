@@ -1,12 +1,21 @@
-const {byId, bindListener} = require('./dom')
+const {byId} = require('./dom')
 const {findRowsInRange} = require('./calculation')
 const {TimeData} = require('./excel')
 const moment = require('moment')
 
+
 async function setTimeTable() {
     const data = await getTableData()
     const html = generateTable(data)
-    byId('displayTable').innerHTML = html
+    if (typeof window === 'undefined' || !document) {
+        const mainWindow = require('../../main')()
+        webContents = mainWindow.webContents
+        webContents.send('update-table', html)
+        return 
+    }
+    let table = byId('displayTable')
+    
+    table.innerHTML = html
 }
 async function getTableData() {
     const worksheet = await TimeData.getDataWorkSheet()
@@ -38,7 +47,7 @@ function generateTable(data){
     </tbody>
     </table>`
 }
-setTimeTable()
+
 module.exports = {
     setTimeTable
 }

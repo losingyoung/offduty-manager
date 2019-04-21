@@ -3,6 +3,17 @@
 // All of the Node.js APIs are available in this process.
 require('./src/scripts/form')
 require('./src/scripts/operation')
-require('./src/scripts/calculation')
-require('./src/scripts/autoLaunch')
-require('./src/scripts/showTable')
+const { addCalculateBtnListener,  initRender} = require('./src/scripts/calculation')
+const { checkAutoLaunch } = require('./src/scripts/autoLaunch')
+const { setTimeTable } = require('./src/scripts/showTable')
+const { delOldLog } = require('./src/scripts/logger')
+checkAutoLaunch()
+addCalculateBtnListener()
+initRender()
+setTimeTable()
+delOldLog()
+const {ipcRenderer} = require('electron')
+
+ipcRenderer.on('update-table', (event, message) => {
+    document.getElementById('displayTable').innerHTML = message
+})

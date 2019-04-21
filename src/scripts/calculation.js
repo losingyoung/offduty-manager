@@ -1,32 +1,50 @@
 const {byId, bindListener} = require('./dom')
 const moment = require('moment')
 const {TimeData} = require('./excel')
+const {isRenderer} = require('./utils')
+const {ipcRenderer} = require('electron')
 
-const quaterStartEndMonth = [[], [1, 4], [4, 7], [7, 10], [10, 13]]
-function addListeners() {
-    addCalculateBtnListener()
+
+function initRender() {
+    ipcRenderer.on('update-calculation', (event, {weekAvrg, monthAvrg, thisQuaterAvrg, lastQuaterAvrg, yearAvrg}) => {
+        byId('weekAvrg').innerText=weekAvrg
+        byId('monthAvrg').innerText=monthAvrg
+        byId('thisQuater').innerText=thisQuaterAvrg
+        byId('lastQuater').innerText=lastQuaterAvrg
+        byId('yearAvrg').innerText=yearAvrg
+    })
 }
+
 function addCalculateBtnListener() {
     bindListener(byId('calculateBtn'), 'click', resetCalculateDate)
 }
 async function resetCalculateDate() {
-    const include6Minute = byId('count6Input').checked
-    const worksheet = await TimeData.getDataWorkSheet()
+    const include6Minute = isRenderer() ? byId('count6Input').checked : true
+    let worksheet = await TimeData.getDataWorkSheet()
     const weekAvrg = calculateWeekAvrg(worksheet, {include6Minute})
-    byId('weekAvrg').innerText=weekAvrg
+    
     const monthAvrg = calculateMonthAvrg(worksheet, {include6Minute})
-    byId('monthAvrg').innerText=monthAvrg
     
     const thisQuater = moment().quarter()
     const thisQuaterAvrg = calculateQuaterAvrg(worksheet, thisQuater, {include6Minute})
-    byId('thisQuater').innerText=thisQuaterAvrg
-
+    
     const lastQuater = thisQuater - 1
     const lastQuaterAvrg = calculateQuaterAvrg(worksheet, lastQuater, {include6Minute})
-    byId('lastQuater').innerText=lastQuaterAvrg
-
+   
     const yearAvrg = calculateYearAvrg(worksheet, {include6Minute})
-    byId('yearAvrg').innerText=yearAvrg
+    if (isRenderer()) {
+        byId('weekAvrg').innerText=weekAvrg
+        byId('monthAvrg').innerText=monthAvrg
+        byId('thisQuater').innerText=thisQuaterAvrg
+        byId('lastQuater').innerText=lastQuaterAvrg
+        byId('yearAvrg').innerText=yearAvrg
+    } else {
+        const mainWindow = require('../../main')()
+        webContents = mainWindow.webContents
+        webContents.send('update-calculation', {weekAvrg, monthAvrg, thisQuaterAvrg, lastQuaterAvrg, yearAvrg})
+    }
+    
+    
 }
 function calculateWeekAvrg(worksheet, option){
     const day = moment().weekday() || 7
@@ -37,6 +55,7 @@ function calculateMonthAvrg(worksheet, option){
     return findDataSubtractByDay(worksheet, day, option)
 }
 function calculateQuaterAvrg(worksheet, quater, option) {
+    const quaterStartEndMonth = [[], [1, 4], [4, 7], [7, 10], [10, 13]]
     const startEndMonth = quaterStartEndMonth[quater]
     const [startMonth, endMonth] = startEndMonth
     const day = moment().date()
@@ -116,9 +135,11 @@ function calculateAvrg(times, {include6Minute}) {
     const minute = avrgMinute % 60
     return `${18+hour > 24 ? hour - 6 : 18+hour}:${("0" + minute).slice(-2)}`
 }
-addListeners()
+
 
 module.exports = {
+    addCalculateBtnListener,
     resetCalculation: resetCalculateDate,
-    findRowsInRange
+    findRowsInRange,
+    initRender
 }
