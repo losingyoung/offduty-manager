@@ -1,17 +1,10 @@
 const moment = require('moment')
-const {getLogPath} = require('./data')
+const {getLogPath, getAppDataDir} = require('./data')
 const fs = require('fs')
 const util = require('util')
+const path = require('path')
 const readFile = util.promisify(fs.readFile)
-const appendFile = util.promisify(fs.appendFile)
-// debugger
 class Logger {
-    constructor() {
-        this.log = fs.createWriteStream(getLogPath(), {
-            flags: 'a' // Open file for appending. The file is created if it does not exist.
-        })
-        this.count = 0
-    }
     async readLog() {
         let curLog = ''
         try {
@@ -24,14 +17,10 @@ class Logger {
     }
     writeLog(txt) {
         console.log('write', txt)
-        this.log.write(txt)
-        
-        // fs.appendFileSync(getLogPath(), txt)
-        return
         try {
-            // await appendFile(getLogPath(), txt)
+            fs.appendFileSync(getLogPath(), txt)
         } catch (error) {
-            console.log('wrtite log error')
+            console.log('wrtite log error', error.message)
         }
     }
     async addLog(txt) {
@@ -41,5 +30,21 @@ class Logger {
         return moment().format("YYYY-MM-DD hh:mm:ss")
     }
 }
-const logger = new Logger()
-exports.logger = logger
+function delOldLog() {
+    let dataDir = getAppDataDir()
+    fs.readdir(dataDir, (err, files) => {
+        if (err) return
+        const reg = /log_(\d{4})_(\d{2})_(\d{2})\.txt/
+        files.forEach(file => {
+            const result = file.match(reg)
+            if (!result) return
+            const logDate = moment(`${result[1]}-${result[2]}-${result[3]}`, 'YYYY-MM-DD')
+            const oneWeekBefore = moment().subtract(7, 'days')
+            if (logDate.isSameOrBefore(oneWeekBefore)) {
+                fs.unlink(path.resolve(dataDir, file), err => {})
+            }
+        })
+    })
+}
+exports.Logger = Logger
+exports.delOldLog = delOldLog
