@@ -23,3 +23,15 @@ exports.isDate = time => {
 exports.getYear = () => moment().year()
 exports.getMonth = () => moment().month() + 1
 exports.getDate = () => moment().date()
+exports.isRenderer = () => {
+    // running in a web browser
+    if (typeof process === 'undefined') return true
+  
+    // node-integration is disabled
+    if (!process) return true
+  
+    // We're in node.js somehow
+    if (!process.type) return false
+  
+    return process.type === 'renderer'
+}
