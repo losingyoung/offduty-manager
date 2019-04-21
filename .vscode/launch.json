@@ -5,10 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "electron",
+            "type": "node",
             "request": "launch",
-            "name": "Messages not found.",
-            "appDir": "${workspaceFolder}"
+            "name": "Electron Main",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+            },
+            "args": [
+                "."
+            ],
+            "env": {
+                "NODE_ENV":"development"
+            },
+            "outputCapture": "std"
         }
     ]
 }
