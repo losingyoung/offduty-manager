@@ -30,8 +30,8 @@ function setAutoLaunch(auto) {
     }
 }
 
-checkAutoLaunch()
 
 module.exports = {
-    setAutoLaunch
+    setAutoLaunch,
+    checkAutoLaunch
 }

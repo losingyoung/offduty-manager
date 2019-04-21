@@ -4,8 +4,11 @@ const path = require('path')
 
 const getAppDataDir = (name) => {
     const storeDir =(app || remote.app).getPath('userData')
-    let filePath = path.join(storeDir, name)
-    return filePath
+    if (name) {
+        let filePath = path.join(storeDir, name)
+        return filePath
+    }
+    return storeDir
 }
 exports.getAppDataDir = getAppDataDir
 exports.getTimeXlsxPath = (name='time.xlsx') => {

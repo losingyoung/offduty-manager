@@ -187,56 +187,53 @@ class TimeExcelValidation extends ExcelBase {
         return { result: true }
     }
 }
-const TimeData = (function () {
-    const filePath = getTimeXlsxPath()
-    
-    async function addData(offtime, customData ={}) {
-        let excelHandler = new TimeExcel()
-        let year = customData.year || getYear()
-        let month = customData.month || getMonth()
-        let date = customData.date || getDate()
-        let worksheet = await excelHandler.readWorkSheet(filePath)
-        excelHandler.useWorksheet(worksheet)
-        let isExist = excelHandler.checkExistDate({ year, month, date })
-        if (isExist.length === 1) {
-            let row = worksheet.getRow(isExist[0])
-            let newValues = row.values
-            newValues[4] = offtime
-            row.values = newValues
-        } else if (isExist.length > 1) {
-            // 删掉之前的  bug 如果只有一条 重复的话会删不掉
-            excelHandler.deleteRows(isExist)
-            excelHandler.addRow([year, month, date, offtime])
-        } else {
-            excelHandler.addRow([year, month, date, offtime])
-        }
 
-        await excelHandler.saveXlsx(filePath)
+async function addData(offtime, customData = {}) {
+    let excelHandler = new TimeExcel()
+    let year = customData.year || getYear()
+    let month = customData.month || getMonth()
+    let date = customData.date || getDate()
+    let worksheet = await excelHandler.readWorkSheet(getTimeXlsxPath())
+    excelHandler.useWorksheet(worksheet)
+    let isExist = excelHandler.checkExistDate({ year, month, date })
+    if (isExist.length === 1) {
+        let row = worksheet.getRow(isExist[0])
+        let newValues = row.values
+        newValues[4] = offtime
+        row.values = newValues
+    } else if (isExist.length > 1) {
+        // 删掉之前的  bug 如果只有一条 重复的话会删不掉
+        excelHandler.deleteRows(isExist)
+        excelHandler.addRow([year, month, date, offtime])
+    } else {
+        excelHandler.addRow([year, month, date, offtime])
     }
-    async function getDataWorkSheet() {
-        let excelHandler = new TimeExcel()
-        let worksheet =  await excelHandler.readWorkSheet(filePath)
-        return worksheet
+
+    await excelHandler.saveXlsx(getTimeXlsxPath())
+}
+async function getDataWorkSheet() {
+    let excelHandler = new TimeExcel()
+    let worksheet = await excelHandler.readWorkSheet(getTimeXlsxPath())
+    return worksheet
+}
+async function findDataByDate({ year, month, date }) {
+    let excelHandler = new TimeExcel()
+    let worksheet = await excelHandler.readWorkSheet(getTimeXlsxPath())
+    excelHandler.useWorksheet(worksheet)
+    let isExist = excelHandler.checkExistDate({ year, month, date })
+    if (isExist.length >= 1) {
+        let row = worksheet.getRow(isExist[0])
+        return row.values[4]
     }
-    async function findDataByDate({year, month, date}) {
-        let excelHandler = new TimeExcel()
-        let worksheet = await excelHandler.readWorkSheet(filePath)
-        excelHandler.useWorksheet(worksheet)
-        let isExist = excelHandler.checkExistDate({ year, month, date })
-        if (isExist.length >= 1) {
-            let row = worksheet.getRow(isExist[0])
-            return row.values[4]
-        }
-        return null
-    }
-    function emptyData() {
-        fse.removeSync(filePath)
-    }
-    return {
-        addData,
-        findDataByDate,
-        getDataWorkSheet,
-        emptyData
-    }
-})()
+    return null
+}
+function emptyData() {
+    fse.removeSync(getTimeXlsxPath())
+}
+const TimeData = {
+    addData,
+    findDataByDate,
+    getDataWorkSheet,
+    emptyData
+}
 module.exports = { TimeData, TimeExcelValidation }

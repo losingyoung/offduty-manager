@@ -7,8 +7,9 @@ const fse = require('fs-extra')
 const {setAutoLaunch} = require('./src/scripts/autoLaunch')
 const {getUserSetting} = require('./src/scripts/userSetting')
 const {app, BrowserWindow, Tray, Menu, dialog} = electron
-const recorder = require('./src/scripts/recording')
+const {checkPreviousSavedData, Recorder} = require('./src/scripts/recording')
 const { autoUpdater } = require("electron-updater")
+const {delOldLog} = require('./src/scripts/logger')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -20,7 +21,7 @@ function createWindow () {
     width: 800, height: 600,
     icon: path.join(__dirname, './assets/icons/png/64x64.png')
   })
-
+  // mainWindow.webContents.openDevTools()
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
@@ -37,7 +38,10 @@ function createWindow () {
   mainWindow.on('minimize', evt => {
     hideWindow()
   })
-  hideWindow()
+  if (process.env.NODE_ENV !== 'development') {
+    hideWindow()
+  }
+
   // mainWindow.on('close', function () {
   //   stopRecording()
   // })
@@ -87,6 +91,8 @@ function quit() {
   app.quit()
 }
 function listenPowerChanged() {
+  let recorder = new Recorder()
+  recorder.startRecording()
   electron.powerMonitor.on('resume', () => {
     recorder.startRecording()
   })
@@ -108,6 +114,8 @@ app.on('ready', () => {
   setContextMenu()
   listenPowerChanged()
   autoUpdater.checkForUpdatesAndNotify()
+  checkPreviousSavedData()
+  delOldLog()
 })
 
 // Quit when all windows are closed.
@@ -141,3 +149,6 @@ app.on('activate', function () {
 // process.on('exit', () => {
 //   recordCloseTime()
 // })
+module.exports = function() {
+  return mainWindow
+}
