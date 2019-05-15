@@ -35,3 +35,11 @@ footer{
 .show{
     display: block;
 }
+.operation-group{
+    display:flex;
+    flex-direction: column;
+}
+
+.operation-group button{
+    margin-bottom: 10px;
+}

@@ -1,4 +1,4 @@
-const { getTimeXlsxPath } = require('./data')
+const { getTimeXlsxPath, getBackupTimeXlsxPath } = require('./data')
 const fse = require('fs-extra')
 const { zip, inRange, isDate, getDate, getMonth, getYear } = require('./utils')
 const Excel = require('exceljs')
@@ -210,6 +210,9 @@ async function addData(offtime, customData = {}) {
     }
 
     await excelHandler.saveXlsx(getTimeXlsxPath())
+    process.nextTick(() => {
+        fse.copyFile(getTimeXlsxPath(), getBackupTimeXlsxPath())
+    })
 }
 async function getDataWorkSheet() {
     let excelHandler = new TimeExcel()

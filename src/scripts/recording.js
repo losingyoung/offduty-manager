@@ -23,24 +23,24 @@ async function checkPreviousSavedData() {
         setInterval(checkPreviousSavedData, 1000 * 60 * 60 * 6)
     }
 }
-// 一小时检查一次xlsx当天是否已记录, 是则关闭timer
-function checkIfTodaySaved() {
-
-}
 class Recorder {
     constructor() {
         this._record = false
         this.timer = null
         this.inIdle = false
-        this.logger = new Logger()
-        this.idleTime = process.env.NODE_ENV === 'development' ? 3 : 60 * 3
+        this.idleTime = process.env.NODE_ENV === 'development' ? 3 * 60 : 60 * 3
     }
     startRecording() {
-        this.logger.addLog('start recording')
+        
+        Logger.addLog('start recording')
         this._record = true
+        this.record()
+
         if (!this.timer) {
             if (process.env.NODE_ENV === 'development') {
-                this.timer = setInterval(() => {this.record()}, 1000 * 20)
+                this.timer = setInterval(() => {
+                    this.record()
+                }, 20)
             } else {
                 this.timer = setInterval(() => {this.record()}, 1000 * 60 * 5)
             }
@@ -49,29 +49,33 @@ class Recorder {
         }
     }
     async record() {
-        this.logger.addLog(`recording is ${this._record}, inidle is ${this.inIdle}`)
-        this.queryIdle()
+        // Logger.addLog(`recording is ${this._record}, inidle is ${this.inIdle}`)
+        let inIdle = await this.queryIdle()
         if (this._record && !this.inIdle) {
             if (!isWeekend() || process.env.NODE_ENV === 'development') {
-                console.log('update date')
                 let data = await readData()
                 data[getToday()] = moment().format('HH:mm')
                 await saveData(data)
             }
         }
+        return
     }
     queryIdle() {
-        electron.powerMonitor.querySystemIdleTime(time => {
-            this.logger.addLog(`idle time: ${time}`)
-            if (time > this.idleTime) {
-                this.inIdle = true
-            } else {
-                this.inIdle = false
-            }
+        return new Promise(resolve => {
+            electron.powerMonitor.querySystemIdleTime(time => {
+                // Logger.addLog(`idle time: ${time}`)
+                if (time > this.idleTime) {
+                    this.inIdle = true
+                    resolve(true)
+                } else {
+                    this.inIdle = false
+                    resolve(false)
+                }
+            })
         })
     }
     stopRecording() {
-        this.logger.addLog('stop recording')
+        Logger.addLog('stop recording')
         this._record = false
         if (this.timer) {
             this.timer = clearInterval(this.timer)
@@ -122,12 +126,13 @@ function saveData(data) {
     fse.writeFile(getRecodingDataPath(), JSON.stringify(data), err => {
         // record err
         if (err) {
-            this.logger.addLog(`error: ${err}`)
+            Logger.addLog(`error: ${err}`)
             return
         }
         
     })
 }
+
 
 module.exports = {
     Recorder,

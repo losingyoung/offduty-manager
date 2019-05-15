@@ -2,7 +2,7 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 require('./src/scripts/form')
-require('./src/scripts/operation')
+const addOperationListeners = require('./src/scripts/operation')
 const { addCalculateBtnListener,  initRender} = require('./src/scripts/calculation')
 const { checkAutoLaunch } = require('./src/scripts/autoLaunch')
 const { setTimeTable } = require('./src/scripts/showTable')
@@ -11,6 +11,7 @@ checkAutoLaunch()
 addCalculateBtnListener()
 initRender()
 setTimeTable()
+addOperationListeners()
 delOldLog()
 const {ipcRenderer} = require('electron')
 

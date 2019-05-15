@@ -105,6 +105,10 @@ function findRowsInRange(worksheet, startDate, endDate=moment().add(1, 'days')) 
         if (values.length < 4) {
             return
         }
+        if (process.env.NODE_ENV==='development') {
+            console.log('de',`${values[1]}-${values[2]}-${values[3]}`)
+        }
+        
         const date = moment(`${values[1]}-${values[2]}-${values[3]}`)
         if (date.isSameOrAfter(startDate) && date.isBefore(endDate)) {
             times.push(values)

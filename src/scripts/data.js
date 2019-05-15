@@ -14,6 +14,9 @@ exports.getAppDataDir = getAppDataDir
 exports.getTimeXlsxPath = (name='time.xlsx') => {
     return getAppDataDir(name)
 }
+exports.getBackupTimeXlsxPath = (name='time_backup.xlsx') => {
+    return getAppDataDir(name)
+}
 
 exports.getRecodingDataPath = (name='recording.json') => {
     return getAppDataDir(name)

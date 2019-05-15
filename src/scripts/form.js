@@ -44,10 +44,10 @@ const changeMinute = function(){
     }
 }
 const setInputTime = function() {
-  const hour = moment().hour()
-  const minute = moment().minute()
-  byId('timeHour').value = hour
-  byId('timeMinute').value = minute
+  const hour = moment().hour() + ''
+  const minute = moment().minute() + ''
+  byId('timeHour').value = hour.padStart('2', '0')
+  byId('timeMinute').value = minute.padStart('2', '0')
 }
 const saveTime = async time => {
     const data = `${time.hour}:${time.minute}`

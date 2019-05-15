@@ -1,33 +1,33 @@
 const moment = require('moment')
 const {getLogPath, getAppDataDir} = require('./data')
 const fs = require('fs')
+// const fs = require('graceful-fs')
 const util = require('util')
 const path = require('path')
 const readFile = util.promisify(fs.readFile)
+let times = 0
 class Logger {
-    async readLog() {
-        let curLog = ''
-        try {
-            curLog = await readFile(getLogPath(), {encoding: 'utf-8'})
-        } catch (error) {
-            console.log('no log')
-            // await writeFile(getLogPath())
-        }
-        return curLog
-    }
-    writeLog(txt) {
+    // async readLog() {
+    //     let curLog = ''
+    //     try {
+    //         curLog = await readFile(getLogPath(), {encoding: 'utf-8'})
+    //     } catch (error) {
+    //         console.log('no log')
+    //         // await writeFile(getLogPath())
+    //     }
+    //     return curLog
+    // }
+    static addLog(txt) {
+        let time = moment().format("YYYY-MM-DD hh:mm:ss")
+        txt = `${time} ${txt}\n`
         console.log('write', txt)
         try {
             fs.appendFileSync(getLogPath(), txt)
+            // fs.appendFileSync('./file.txt', txt)
+            console.log('write log success', times++)
         } catch (error) {
             console.log('wrtite log error', error.message)
         }
-    }
-    async addLog(txt) {
-        await this.writeLog(`${this.getTime()} ${txt}\n`)
-    }
-    getTime(){
-        return moment().format("YYYY-MM-DD hh:mm:ss")
     }
 }
 function delOldLog() {

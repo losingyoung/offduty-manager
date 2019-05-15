@@ -1,5 +1,5 @@
 const {byId, bindListener} = require('./dom')
-const { getTimeXlsxPath } = require('./data')
+const { getTimeXlsxPath, getBackupTimeXlsxPath} = require('./data')
 const {TimeExcelValidation, TimeData} = require('./excel')
 const fse = require('fs-extra')
 const {dialog} = require('electron').remote
@@ -11,6 +11,7 @@ function addListeners() {
     addExportBtnListener()
     addImportBtnListener()
     addInitBtnListener()
+    addBackupListener()
 }
 
 function addExportBtnListener() {
@@ -63,4 +64,17 @@ function handleInit() {
     setTimeTable()
     resetCalculation()
 }
-addListeners()
+function addBackupListener() {
+        bindListener(byId('backup'), 'click', handleBackup)
+}
+function handleBackup() {
+    try {
+        fse.copyFileSync(getBackupTimeXlsxPath(), getTimeXlsxPath())
+        setTimeTable()
+        resetCalculation()
+        _alert('恢复成功')
+    } catch (error) {
+        _alert('恢复失败: '+ error.message)
+    }
+}
+module.exports = addListeners
